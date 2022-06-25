@@ -8,5 +8,6 @@ La base de données utilise mongoose, ainsi que le framework [sheweny](https://s
 
 1. Cloner la repo.
 2. Renommer le fichier `config.template.js` — il est situé dans `src/structures` — en `config.js` et mettre vos tokens.
-3. Installer les dépendences : `npm install`.
-4. Démarrer le bot : `node .\src\index.js`.
+3. Renommer le fichier `index.template.js` en `index.js`. Entrez l'ID de votre serveur dans `guildId`, ainsi que l'ID de votre compte discord dans `admins`.
+4. Installer les dépendences : `npm install`.
+5. Démarrer le bot : `node .\src\index.js`.
