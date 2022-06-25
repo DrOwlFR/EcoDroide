@@ -71,15 +71,15 @@ async function getMemberInventory(member) {
 }
 
 async function addMoney(member, amount) {
-  const memberData = await getMember(member);
-  memberData.credits += amount;
-  updateMember(member, { credits: memberData.credits });
+  let memberCredits = (await getMember(member)).credits;
+  memberCredits += amount;
+  updateMember(member, { credits: memberCredits });
 }
 
 async function removeMoney(member, amount) {
-  const memberData = await getMember(member);
-  memberData.credits -= amount;
-  updateMember(member, { credits: memberData.credits });
+  let memberCredits = (await getMember(member)).credits;
+  memberCredits -= amount;
+  updateMember(member, { credits: memberCredits });
 }
 
 async function daily(member) {
@@ -127,6 +127,18 @@ async function removeItemFromShop(guild, item) {
   if (!guildData.shop[item]) return undefined;
   delete guildData.shop[item];
   updateGuild(guild, { shop: guildData.shop });
+  return true;
+}
+
+// Inventory
+
+async function giveItemToTarget(member, target, item) {
+  const memberInventory = (await getMember(member)).inventory;
+  memberInventory.splice(memberInventory.indexOf(item), 1);
+  updateMember(member, { inventory: memberInventory });
+  const targetInventory = (await getMember(target)).inventory;
+  targetInventory.push(item);
+  updateMember(target, { inventory: targetInventory });
 }
 
 // Other
@@ -135,4 +147,4 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
-module.exports = { getMember, createMember, updateMember, getGuild, createGuild, updateGuild, getAllGuildMembers, getMoneySettings, getMemberMoney, getMemberInventory, addMoney, removeMoney, daily, buyItemFromShop, sellItemFromInventory, showShop, addItemToShop, removeItemFromShop, capitalizeFirstLetter };
+module.exports = { getMember, createMember, updateMember, getGuild, createGuild, updateGuild, getAllGuildMembers, getMoneySettings, getMemberMoney, getMemberInventory, addMoney, removeMoney, daily, buyItemFromShop, sellItemFromInventory, showShop, addItemToShop, removeItemFromShop, giveItemToTarget, capitalizeFirstLetter };

@@ -38,6 +38,7 @@ module.exports = class ShopCommand extends Command {
               description: "Objet à vendre.",
               type: "STRING",
               required: true,
+              autocomplete: true,
             },
           ],
         },
@@ -85,5 +86,18 @@ module.exports = class ShopCommand extends Command {
       }
     }
 
+  }
+  async onAutocomplete(interaction) {
+    const focusedOption = interaction.options.getFocused(true);
+    const items = await getMemberInventory(interaction.member);
+    const choices = [];
+    for (const item of items) {
+      choices.push(item);
+    }
+    const filteredChoices = choices.filter((choice) => choice.startsWith(focusedOption.value)).slice(0, 25);
+
+    interaction
+      .respond(filteredChoices.map((choice) => ({ name: choice, value: choice })))
+      .catch(console.error);
   }
 };

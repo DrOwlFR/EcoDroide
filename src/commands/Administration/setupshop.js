@@ -1,5 +1,5 @@
 const { Command } = require("sheweny");
-const { addItemToShop, capitalizeFirstLetter, removeItemFromShop } = require("../../structures/providers");
+const { addItemToShop, capitalizeFirstLetter, removeItemFromShop, showShop } = require("../../structures/providers");
 
 module.exports = class SetupShopCommand extends Command {
   constructor(client) {
@@ -37,9 +37,10 @@ module.exports = class SetupShopCommand extends Command {
           type: "SUB_COMMAND",
           options: [{
             name: "objet",
-            description: "Objet à retier au shop",
+            description: "Objet à retirer au shop.",
             type: "STRING",
             required: true,
+            autocomplete: true,
           }],
         },
       ],
@@ -65,10 +66,24 @@ module.exports = class SetupShopCommand extends Command {
       case "remove": {
         const item = capitalizeFirstLetter(options.getString("objet"));
         const remove = await removeItemFromShop(guild, item);
+        console.log(remove);
         if (!remove) return interaction.reply({ content: "<:shield_cross:904023640453050438> L'item que vous souhaitez supprimer n'existe pas.", ephemeral: true });
         interaction.reply({ content: "<:shield_check:904023639840669737> Item supprimé avec succès", ephemeral: true });
         break;
       }
     }
+  }
+  async onAutocomplete(interaction) {
+    const focusedOption = interaction.options.getFocused(true);
+    const items = await showShop(interaction.guild);
+    const choices = [];
+    for (const item in items) {
+      choices.push(item);
+    }
+    const filteredChoices = choices.filter((choice) => choice.startsWith(focusedOption.value)).slice(0, 25);
+
+    interaction
+      .respond(filteredChoices.map((choice) => ({ name: choice, value: choice })))
+      .catch(console.error);
   }
 };
